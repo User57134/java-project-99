@@ -1,3 +1,26 @@
 spring:
   application:
     name: app
+
+  profiles:
+    default: dev                                # По-умолчанию запускается с профилем 'dev'
+
+  jpa:
+    hibernate:
+      ddl-auto: update                          # Автоматически обновляет таблицы при изменении Entity
+
+  output:
+    ansi:
+      enabled: always                           # Цветной вывод
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG                    # Включает правильное логирование SQL-запросов в Spring Boot
+                                                # через стандартный фреймворк логирования (SLF4J/Logback),
+                                                # используется вместо 'spring.jpa.show-sql: true'
+
+  pattern:
+    dateformat: "yyyy-MM-dd HH:mm:ss"           # Настраиваемый формат даты в логах
+
+server:
+  port: "${PORT:8080}"                          # Порт по-умолчанию 8080

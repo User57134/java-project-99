@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    url: "${SPRING_DATASOURCE_URL}"
+    driver-class-name: org.postgresql.Driver
+
+    # Ограничиваем пул, чтобы не упереться в лимиты бесплатной БД Render
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 4
+      minimum-idle: 1
+
+  jpa:
+    # Явно указываем платформу, чтобы Hibernate не запрашивал метаданные у БД
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  output:
+    ansi:
+      enabled: never                            # Цветной вывод отключен
+
+logging:
+  level:
+    org.hibernate.SQL: WARN                     # Отключени вывод SQL
+
+
+server:
+  error:
+    include-stacktrace: never                   # Трассировка стека не включается в автоматические HTTP-ответы сервера
