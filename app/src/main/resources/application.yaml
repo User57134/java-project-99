@@ -24,3 +24,7 @@ logging:
 
 server:
   port: "${PORT:8080}"                          # Порт по-умолчанию 8080
+
+rsa:
+  private-key: classpath:certs/private.pem      # Закрытый ключ
+  public-key: classpath:certs/public.pem        # Открытый ключ

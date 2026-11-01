@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.jayway.jsonpath.JsonPath;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
+import hexlet.code.util.JWTUtils;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,21 +21,26 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
-@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureMockMvc
 public class UserControllerTest {
     private final int TEST_USER_COUNT = 3;
 
     private final MockMvc mockMvc;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JWTUtils jwtUtils;
     private List<User> users = new ArrayList<>();
 
     @Autowired
     public UserControllerTest(
-            MockMvc mock, UserRepository repositoryOfUsers, PasswordEncoder encoder) {
+            MockMvc mock,
+            UserRepository repositoryOfUsers,
+            PasswordEncoder encoder,
+            JWTUtils utilsForJWT) {
         mockMvc = mock;
         userRepository = repositoryOfUsers;
         passwordEncoder = encoder;
+        jwtUtils = utilsForJWT;
     }
 
     @BeforeEach
@@ -47,7 +53,11 @@ public class UserControllerTest {
     @Test
     // Returns 200 and List<User>
     void indexTest() throws Exception {
-        mockMvc.perform(get("/api/users"))
+        var actor = users.getFirst();
+
+        String token = jwtUtils.generateToken(actor.getEmail(), actor.getAuthorities());
+
+        mockMvc.perform(get("/api/users").header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(TEST_USER_COUNT));
@@ -56,10 +66,14 @@ public class UserControllerTest {
     @Test
     // Returns 200 and User
     void showTest() throws Exception {
-        var user = users.getFirst();
+        var actor = users.getFirst();
+
+        String token = jwtUtils.generateToken(actor.getEmail(), actor.getAuthorities());
 
         var content =
-                mockMvc.perform(get("/api/users/{id}", user.getId()))
+                mockMvc.perform(
+                                get("/api/users/{id}", actor.getId())
+                                        .header("Authorization", "Bearer " + token))
                         .andExpect(status().isOk())
                         .andReturn()
                         .getResponse()
@@ -67,10 +81,10 @@ public class UserControllerTest {
 
         var context = JsonPath.parse(content);
 
-        assertThat(context.read("$.id", Long.class)).isEqualTo(user.getId());
-        assertThat(context.read("$.firstName", String.class)).isEqualTo(user.getFirstName());
-        assertThat(context.read("$.lastName", String.class)).isEqualTo(user.getLastName());
-        assertThat(context.read("$.email", String.class)).isEqualTo(user.getEmail());
+        assertThat(context.read("$.id", Long.class)).isEqualTo(actor.getId());
+        assertThat(context.read("$.firstName", String.class)).isEqualTo(actor.getFirstName());
+        assertThat(context.read("$.lastName", String.class)).isEqualTo(actor.getLastName());
+        assertThat(context.read("$.email", String.class)).isEqualTo(actor.getEmail());
     }
 
     @Test
@@ -78,13 +92,13 @@ public class UserControllerTest {
     void createTest() throws Exception {
         var body =
                 """
-                    {
-                       "email": "jack@google.com",
-                       "firstName": "Jack",
-                       "lastName": "Jons",
-                       "password": "some-password"
-                     }
-                """;
+                            {
+                               "email": "jack@google.com",
+                               "firstName": "Jack",
+                               "lastName": "Jons",
+                               "password": "some-password"
+                             }
+                        """;
 
         var result =
                 mockMvc.perform(
@@ -110,18 +124,21 @@ public class UserControllerTest {
     void partialUpdateTest() throws Exception {
         var body =
                 """
-                    {
-                       "firstName": "Jack",
-                       "email": "jack@yahoo.com",
-                       "password": "new-password"
-                     }
-                """;
+                            {
+                               "firstName": "Jack",
+                               "email": "jack@yahoo.com",
+                               "password": "new-password"
+                             }
+                        """;
 
-        var user = users.getFirst();
+        var actor = users.getFirst();
+
+        String token = jwtUtils.generateToken(actor.getEmail(), actor.getAuthorities());
 
         var content =
                 mockMvc.perform(
-                                put("/api/users/{id}", user.getId())
+                                put("/api/users/{id}", actor.getId())
+                                        .header("Authorization", "Bearer " + token)
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(body))
                         .andExpect(status().isOk())
@@ -131,23 +148,31 @@ public class UserControllerTest {
 
         var context = JsonPath.parse(content);
 
-        assertThat(context.read("$.id", Long.class)).isEqualTo(user.getId());
+        assertThat(context.read("$.id", Long.class)).isEqualTo(actor.getId());
         assertThat(context.read("$.firstName", String.class)).isEqualTo("Jack");
-        assertThat(context.read("$.lastName", String.class)).isEqualTo(user.getLastName());
+        assertThat(context.read("$.lastName", String.class)).isEqualTo(actor.getLastName());
         assertThat(context.read("$.email", String.class)).isEqualTo("jack@yahoo.com");
 
-        var updatedUser = userRepository.findById(user.getId());
-        assertThat(updatedUser.get().getPassword().equals(passwordEncoder.encode("new-password")));
+        var updatedUser = userRepository.findById(actor.getId());
+        boolean isPasswordMatched =
+                passwordEncoder.matches("new-password", updatedUser.get().getPassword());
+        assertThat(isPasswordMatched).isTrue();
     }
 
     @Test
+
     // Returns status 204
     void deleteTest() throws Exception {
-        var user = users.getFirst();
+        var actor = users.getFirst();
 
-        mockMvc.perform(delete("/api/users/{id}", user.getId())).andExpect(status().isNoContent());
+        String token = jwtUtils.generateToken(actor.getEmail(), actor.getAuthorities());
 
-        assertThat(userRepository.findById(user.getId())).isNotPresent();
+        mockMvc.perform(
+                        delete("/api/users/{id}", actor.getId())
+                                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
+
+        assertThat(userRepository.findById(actor.getId())).isNotPresent();
     }
 
     private List<User> createUsers(int userCount) {
@@ -158,7 +183,7 @@ public class UserControllerTest {
             user.setFirstName("TestName" + i);
             user.setLastName("TestSurname" + i);
             user.setEmail("test" + i + "@mail.com");
-            user.setPassword("" + i + i + i);
+            user.setPassword(passwordEncoder.encode("" + i + i + i));
             rawUsers.add(user);
         }
 

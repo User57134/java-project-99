@@ -3,6 +3,9 @@ plugins {
 	// Подключает базовые инструменты компиляции, тестирования и сборки Java в JAR
 	java
 
+	// Проверка покрытия тестами
+	jacoco
+
 	// Подключение следующих функци:
 	// 1. Упаковывает приложение и все библиотеки в один готовый к запуску JAR
     // 2. Автоматически подбирает совместимые версии для Spring-зависимостей
@@ -55,6 +58,13 @@ dependencies {
 	// Аутентификация, авторизация и защита приложения (включая PasswordEncoder для хэширования паролей)
 	implementation(libs.spring.boot.starter.security)
 
+	// Набор инструментов для тестирования безопасности (имитация пользователей, проверка ролей и CSRF)
+	testImplementation(libs.spring.security.test)
+
+	// Подключает защиту API по токенам (JWT): проверяет «пропуск» пользователя при каждом запросе,
+	// делает приложение OAuth2 сервером ресурсов
+	implementation(libs.spring.boot.starter.oauth2.resource.server)
+
 	// Подключение компонентов для работы с web, библиотеку для работы с JSON
 	implementation(libs.spring.boot.starter.webmvc)
 
@@ -85,4 +95,13 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+	finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+	dependsOn(tasks.test)
+	reports {
+		xml.required.set(true)
+		html.required.set(true)
+	}
 }

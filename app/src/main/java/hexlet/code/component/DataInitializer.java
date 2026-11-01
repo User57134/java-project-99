@@ -1,5 +1,6 @@
 package hexlet.code.component;
 
+import hexlet.code.model.Role;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
 import org.springframework.boot.ApplicationArguments;
@@ -20,10 +21,10 @@ public class DataInitializer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        createSpecialUser();
+        createAdmin();
     }
 
-    private void createSpecialUser() {
+    private void createAdmin() {
         if (userRepository.findByEmail("hexlet@example.com").isPresent()) {
             return;
         }
@@ -31,8 +32,9 @@ public class DataInitializer implements ApplicationRunner {
         User user = new User();
         user.setEmail("hexlet@example.com");
         user.setPassword(passwordEncoder.encode("qwerty"));
-        user.setFirstName("User");
-        user.setLastName("Special");
+        user.setFirstName("Admin");
+        user.setLastName("Hexlet");
+        user.setRole(Role.ADMIN);
         userRepository.save(user);
     }
 }
