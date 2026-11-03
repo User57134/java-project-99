@@ -90,6 +90,10 @@ public class UserControllerTest {
     @Test
     // Returns status 201 and Body
     void createTest() throws Exception {
+        var actor = users.getFirst();
+
+        String token = jwtUtils.generateToken(actor.getEmail(), actor.getAuthorities());
+
         var body =
                 """
                             {
@@ -103,6 +107,7 @@ public class UserControllerTest {
         var result =
                 mockMvc.perform(
                                 post("/api/users")
+                                        .header("Authorization", "Bearer " + token)
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(body))
                         .andExpect(status().isCreated())
