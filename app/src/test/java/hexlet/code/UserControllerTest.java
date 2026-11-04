@@ -1,11 +1,15 @@
 package hexlet.code;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.jayway.jsonpath.JsonPath;
+import hexlet.code.app.TestUtils;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.util.JWTUtils;
@@ -29,6 +33,7 @@ public class UserControllerTest {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JWTUtils jwtUtils;
+    private final TestUtils testUtils;
     private List<User> users = new ArrayList<>();
 
     @Autowired
@@ -36,18 +41,20 @@ public class UserControllerTest {
             MockMvc mock,
             UserRepository repositoryOfUsers,
             PasswordEncoder encoder,
-            JWTUtils utilsForJWT) {
+            JWTUtils utilsForJWT,
+            TestUtils utilsForTests) {
         mockMvc = mock;
         userRepository = repositoryOfUsers;
         passwordEncoder = encoder;
         jwtUtils = utilsForJWT;
+        testUtils = utilsForTests;
     }
 
     @BeforeEach
     void setUp() {
         userRepository.deleteAll();
 
-        users = createUsers(TEST_USER_COUNT);
+        users = testUtils.createUsers(TEST_USER_COUNT);
     }
 
     @Test
@@ -178,20 +185,5 @@ public class UserControllerTest {
                 .andExpect(status().isNoContent());
 
         assertThat(userRepository.findById(actor.getId())).isNotPresent();
-    }
-
-    private List<User> createUsers(int userCount) {
-        List<User> rawUsers = new ArrayList<>();
-
-        for (int i = 0; i < userCount; i += 1) {
-            var user = new User();
-            user.setFirstName("TestName" + i);
-            user.setLastName("TestSurname" + i);
-            user.setEmail("test" + i + "@mail.com");
-            user.setPassword(passwordEncoder.encode("" + i + i + i));
-            rawUsers.add(user);
-        }
-
-        return userRepository.saveAll(rawUsers);
     }
 }

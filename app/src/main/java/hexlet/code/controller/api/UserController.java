@@ -25,12 +25,11 @@ public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public UserController(UserService servicOfUser) {
+        userService = servicOfUser;
     }
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<List<UserDTO>> index() {
         var users = userService.findAll();
 
