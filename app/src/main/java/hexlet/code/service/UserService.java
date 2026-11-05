@@ -39,9 +39,9 @@ public class UserService {
 
     @Transactional
     public UserDTO create(UserCreateDTO dto) {
-        var post = userRepository.save(userMapper.makeEntity(dto));
+        var user = userRepository.save(userMapper.makeEntity(dto));
 
-        return userMapper.makeDTO(post);
+        return userMapper.makeDTO(user);
     }
 
     @Transactional

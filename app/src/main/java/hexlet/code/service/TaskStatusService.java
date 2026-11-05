@@ -31,16 +31,16 @@ public class TaskStatusService {
                         .orElseThrow(
                                 () ->
                                         new ResourceNotFoundException(
-                                                "Status with ID " + id + " not found"));
+                                                "Task status with ID " + id + " not found"));
 
         return taskStatusMapper.makeDTO(taskStatus);
     }
 
     @Transactional
     public TaskStatusDTO create(TaskStatusCreateDTO dto) {
-        var post = taskStatusRepository.save(taskStatusMapper.makeEntity(dto));
+        var taskStatus = taskStatusRepository.save(taskStatusMapper.makeEntity(dto));
 
-        return taskStatusMapper.makeDTO(post);
+        return taskStatusMapper.makeDTO(taskStatus);
     }
 
     @Transactional
@@ -51,7 +51,7 @@ public class TaskStatusService {
                         .orElseThrow(
                                 () ->
                                         new ResourceNotFoundException(
-                                                "Status with ID " + id + " not found"));
+                                                "Task status with ID " + id + " not found"));
 
         taskStatusMapper.updateEntity(Status, dto);
 

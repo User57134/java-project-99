@@ -1,11 +1,15 @@
 package hexlet.code.model;
 
-import static jakarta.persistence.GenerationType.IDENTITY;
-
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,20 +23,20 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @NoArgsConstructor
 @Getter
 @Setter
-public class TaskStatus {
+public class TaskStatus implements BaseEntity {
     @Id
-    @GeneratedValue(strategy = IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank @Size(min = 1) @Column(unique = true, nullable = false)
+    @NotBlank @Size(min = 1, message = "Название статуса должно содержать как минимум 1 символ") @Column(unique = true, nullable = false)
     private String name;
 
-    @NotBlank @Size(min = 1) @Column(unique = true, nullable = false)
+    @NotBlank @Size(min = 1, message = "Слаг статуса должен содержать как минимум 1 символ") @Column(unique = true, nullable = false)
     private String slug;
 
     @CreatedDate
     @Setter(AccessLevel.NONE)
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
     @Override
     public boolean equals(Object obj) {

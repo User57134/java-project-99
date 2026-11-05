@@ -31,8 +31,10 @@ public class DataInitializer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
+        log.info("🚀 Старт автоматической генерации данных для DEV...");
         createAdmin();
         createAvailableTaskStatuses();
+        log.info("✅ База данных успешно наполнена!");
     }
 
     private void createAdmin() {

@@ -1,7 +1,9 @@
 package hexlet.code.app;
 
+import hexlet.code.model.Task;
 import hexlet.code.model.TaskStatus;
 import hexlet.code.model.User;
+import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
 import java.util.ArrayList;
@@ -14,17 +16,26 @@ import org.springframework.stereotype.Component;
 public class TestUtils {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final TaskStatusRepository taskStatusRepository;
+    private final TaskRepository taskRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public TestUtils(
             UserRepository repositoryOfUsers,
             TaskStatusRepository repositoryOfStatuses,
+            TaskRepository repositoryOfTasks,
             PasswordEncoder encoder) {
         userRepository = repositoryOfUsers;
         taskStatusRepository = repositoryOfStatuses;
+        taskRepository = repositoryOfTasks;
         passwordEncoder = encoder;
+    }
+
+    public void clearRepositories() {
+        taskRepository.deleteAll();
+        userRepository.deleteAll();
+        taskStatusRepository.deleteAll();
     }
 
     public List<User> createUsers(int userCount) {
@@ -47,11 +58,40 @@ public class TestUtils {
 
         for (int i = 0; i < statusCount; i += 1) {
             var status = new TaskStatus();
-            status.setName("Name" + i);
-            status.setSlug("Slug" + i);
+            status.setName("StatusName" + i);
+            status.setSlug("status_slug" + i);
             rawStatuses.add(status);
         }
 
         return taskStatusRepository.saveAll(rawStatuses);
+    }
+
+    public List<Task> createTasks(int taskCount) {
+        var statuses = taskStatusRepository.findAll();
+        var users = userRepository.findAll();
+
+        if (statuses.isEmpty()) {
+            createStatuses(taskCount);
+            statuses = taskStatusRepository.findAll();
+        }
+
+        if (users.isEmpty()) {
+            createUsers(taskCount);
+            users = userRepository.findAll();
+        }
+
+        List<Task> rawTasks = new ArrayList<>();
+
+        for (int i = 0; i < taskCount; i += 1) {
+            var task = new Task();
+            task.setName("Name" + i);
+            task.setDescription("Description" + i);
+            task.setIndex(i);
+            task.setAssignee(users.get(i));
+            task.setTaskStatus(statuses.get(i));
+            rawTasks.add(task);
+        }
+
+        return taskRepository.saveAll(rawTasks);
     }
 }

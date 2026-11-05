@@ -11,11 +11,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserCreateDTO {
-    @NotBlank @Email private String email;
+    @NotBlank @Email(message = "Некорректный формат для электронной почты") private String email;
 
     private String firstName;
 
     private String lastName;
 
-    @NotBlank @Size(min = 3) private String password;
+    @NotBlank @Size(min = 3, message = "Пароль должен содержать как минимум 3 символа") private String password;
 }

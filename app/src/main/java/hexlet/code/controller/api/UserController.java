@@ -25,8 +25,8 @@ public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserService servicOfUser) {
-        userService = servicOfUser;
+    public UserController(UserService serviceOfUser) {
+        userService = serviceOfUser;
     }
 
     @GetMapping

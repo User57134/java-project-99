@@ -16,7 +16,7 @@ public class UserUpdateDTO {
 
     private JsonNullable<String> lastName;
 
-    @Email private JsonNullable<String> email;
+    @Email(message = "Некорректный формат для электронной почты") private JsonNullable<String> email;
 
-    @Size(min = 3) private JsonNullable<String> password;
+    @Size(min = 3, message = "Пароль должен содержать как минимум 3 символа") private JsonNullable<String> password;
 }

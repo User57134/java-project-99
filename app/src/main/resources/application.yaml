@@ -15,7 +15,10 @@ spring:
 
 logging:
   level:
-    org.hibernate.SQL: DEBUG                    # Включает правильное логирование SQL-запросов в Spring Boot
+    root: INFO                                  # Глобальный уровень логирования
+    org:
+      hibernate:
+        SQL: DEBUG                              # Включает правильное логирование SQL-запросов в Spring Boot
                                                 # через стандартный фреймворк логирования (SLF4J/Logback),
                                                 # используется вместо 'spring.jpa.show-sql: true'
 

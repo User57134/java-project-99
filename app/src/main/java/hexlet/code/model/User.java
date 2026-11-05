@@ -1,17 +1,17 @@
 package hexlet.code.model;
 
-import static jakarta.persistence.GenerationType.IDENTITY;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,9 +32,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 @NoArgsConstructor
 @Getter
 @Setter
-public class User implements UserDetails {
+public class User implements BaseEntity, UserDetails {
     @Id
-    @GeneratedValue(strategy = IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     private Long id;
 
@@ -45,7 +45,7 @@ public class User implements UserDetails {
     @NotBlank @Email(message = "Некорректный формат для электронной почты") @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @NotBlank @Column(nullable = false)
+    @NotBlank @Size(min = 3, message = "Пароль должен содержать как минимум 3 символа") @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
