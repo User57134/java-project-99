@@ -13,6 +13,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class TestUtils {
@@ -73,9 +74,11 @@ public class TestUtils {
         return taskStatusRepository.saveAll(rawStatuses);
     }
 
+    @Transactional
     public List<Task> createTasks(int taskCount) {
         var statuses = taskStatusRepository.findAll();
         var users = userRepository.findAll();
+        var labels = labelRepository.findAll();
 
         if (statuses.isEmpty()) {
             createStatuses(taskCount);
@@ -87,15 +90,21 @@ public class TestUtils {
             users = userRepository.findAll();
         }
 
+        if (labels.isEmpty()) {
+            createLabels(taskCount);
+            labels = labelRepository.findAll();
+        }
+
         List<Task> rawTasks = new ArrayList<>();
 
         for (int i = 0; i < taskCount; i += 1) {
             var task = new Task();
-            task.setName("Name" + i);
+            task.setName("Task" + i);
             task.setDescription("Description" + i);
             task.setIndex(i);
             task.setAssignee(users.get(i));
             task.setTaskStatus(statuses.get(i));
+            task.addLabel(labels.get(i));
             rawTasks.add(task);
         }
 

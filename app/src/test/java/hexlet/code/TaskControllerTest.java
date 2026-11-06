@@ -1,6 +1,6 @@
 package hexlet.code;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -10,8 +10,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.jayway.jsonpath.JsonPath;
 import hexlet.code.app.TestUtils;
+import hexlet.code.dto.label.LabelCreateDTO;
 import hexlet.code.dto.task.TaskCreateDTO;
 import hexlet.code.dto.task.TaskUpdateDTO;
+import hexlet.code.model.Label;
 import hexlet.code.model.Task;
 import hexlet.code.model.User;
 import hexlet.code.repository.TaskRepository;
@@ -19,6 +21,7 @@ import hexlet.code.util.JWTUtils;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,11 +32,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
 @Slf4j
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class TaskControllerTest {
 
     private final int TEST_TASK_COUNT = 3;
@@ -125,6 +130,10 @@ public class TaskControllerTest {
         dto.setIndex(12);
         dto.setAssigneeId(actor.getId());
         dto.setStatus(tasks.getFirst().getTaskStatus().getSlug());
+        var labels = new HashSet<LabelCreateDTO>();
+        labels.add(new LabelCreateDTO("NewLabel1"));
+        labels.add(new LabelCreateDTO("NewLabel2"));
+        dto.setLabels(labels);
 
         String token = jwtUtils.generateToken(actor.getEmail(), actor.getAuthorities());
 
@@ -141,14 +150,21 @@ public class TaskControllerTest {
                         .andExpect(jsonPath("$.index").value(dto.getIndex()))
                         .andExpect(jsonPath("$.status").value(dto.getStatus()))
                         .andExpect(jsonPath("$.assignee_id").value(dto.getAssigneeId()))
+                        .andExpect(jsonPath("$.labelIds").isArray())
+                        .andExpect(jsonPath("$.labelIds.length()").value(labels.size()))
                         .andExpect(jsonPath("$.createdAt").exists())
                         .andReturn();
 
         var content = result.getResponse().getContentAsString();
 
         Long generatedId = JsonPath.parse(content).read("$.id", Long.class);
+        var savedTask = taskRepository.findById(generatedId);
+        assertThat(savedTask).isPresent();
 
-        assertThat(taskRepository.findById(generatedId)).isPresent();
+        var savedLabelsNames = savedTask.get().getLabels().stream().map(Label::getName).toList();
+
+        var expectedLabelNames = labels.stream().map(LabelCreateDTO::getName).toList();
+        assertThat(savedLabelsNames).containsExactlyInAnyOrderElementsOf(expectedLabelNames);
     }
 
     @Test
@@ -162,6 +178,10 @@ public class TaskControllerTest {
         dto.setIndex(JsonNullable.undefined());
         dto.setAssigneeId(JsonNullable.undefined());
         dto.setStatus(JsonNullable.undefined());
+        var labels = new HashSet<LabelCreateDTO>();
+        labels.add(new LabelCreateDTO("NewLabel1"));
+        labels.add(new LabelCreateDTO("NewLabel2"));
+        dto.setLabels(JsonNullable.of(labels));
 
         String token = jwtUtils.generateToken(actor.getEmail(), actor.getAuthorities());
 
@@ -172,6 +192,8 @@ public class TaskControllerTest {
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(objectMapper.writeValueAsString(dto)))
                         .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.labelIds").isArray())
+                        .andExpect(jsonPath("$.labelIds.length()").value(labels.size()))
                         .andReturn()
                         .getResponse()
                         .getContentAsString();
@@ -192,6 +214,14 @@ public class TaskControllerTest {
                 LocalDateTime.parse(createdAtStr).truncatedTo(ChronoUnit.SECONDS);
         LocalDateTime expectedDate = testTask.getCreatedAt().truncatedTo(ChronoUnit.SECONDS);
         assertThat(actualDate).isEqualTo(expectedDate);
+
+        var savedTask = taskRepository.findById(testTask.getId());
+        assertThat(savedTask).isPresent();
+
+        var savedLabelsNames = savedTask.get().getLabels().stream().map(Label::getName).toList();
+
+        var expectedLabelNames = labels.stream().map(LabelCreateDTO::getName).toList();
+        assertThat(savedLabelsNames).containsExactlyInAnyOrderElementsOf(expectedLabelNames);
     }
 
     @Test

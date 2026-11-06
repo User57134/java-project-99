@@ -2,6 +2,7 @@ package hexlet.code.dto.task;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
+import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,6 +23,8 @@ public class TaskDTO {
     private Long assigneeId;
 
     private String status;
+
+    Set<Long> labelIds;
 
     private LocalDateTime createdAt;
 }
