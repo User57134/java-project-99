@@ -21,8 +21,12 @@ public class UserService {
         userMapper = mapper;
     }
 
-    public List<UserDTO> findAll() {
-        return userRepository.findAll().stream().map(userMapper::makeDTO).toList();
+    public List<UserDTO> findAll(int page, int size) {
+        return userRepository.findAll().stream()
+                .map(userMapper::makeDTO)
+                .skip((long) (page - 1) * size)
+                .limit(size)
+                .toList();
     }
 
     public UserDTO find(Long id) {

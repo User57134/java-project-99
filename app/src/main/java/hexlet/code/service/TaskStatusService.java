@@ -20,8 +20,12 @@ public class TaskStatusService {
         taskStatusMapper = mapper;
     }
 
-    public List<TaskStatusDTO> findAll() {
-        return taskStatusRepository.findAll().stream().map(taskStatusMapper::makeDTO).toList();
+    public List<TaskStatusDTO> findAll(int page, int size) {
+        return taskStatusRepository.findAll().stream()
+                .map(taskStatusMapper::makeDTO)
+                .skip((long) (page - 1) * size)
+                .limit(size)
+                .toList();
     }
 
     public TaskStatusDTO find(Long id) {

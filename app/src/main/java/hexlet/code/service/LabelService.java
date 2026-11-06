@@ -21,8 +21,12 @@ public class LabelService {
         labelMapper = mapper;
     }
 
-    public List<LabelDTO> findAll() {
-        return labelRepository.findAll().stream().map(labelMapper::makeDTO).toList();
+    public List<LabelDTO> findAll(int page, int size) {
+        return labelRepository.findAll().stream()
+                .map(labelMapper::makeDTO)
+                .skip((long) (page - 1) * size)
+                .limit(size)
+                .toList();
     }
 
     public LabelDTO find(Long id) {

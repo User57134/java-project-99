@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,8 +31,11 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserDTO>> index() {
-        var users = userService.findAll();
+    public ResponseEntity<List<UserDTO>> index(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        var users = userService.findAll(page, size);
 
         return ResponseEntity.ok()
                 .header("X-Total-Count", String.valueOf(users.size()))
