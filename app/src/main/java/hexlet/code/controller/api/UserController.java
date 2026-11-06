@@ -46,14 +46,14 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDTO create(@Valid @RequestBody UserCreateDTO dto) {
+    public UserDTO create(@RequestBody @Valid UserCreateDTO dto) {
         return userService.create(dto);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ADMIN') or @userUtils.isOwner(#id)")
-    public UserDTO update(@PathVariable long id, @Valid @RequestBody UserUpdateDTO dto) {
+    public UserDTO update(@PathVariable long id, @RequestBody @Valid UserUpdateDTO dto) {
         return userService.update(id, dto);
     }
 

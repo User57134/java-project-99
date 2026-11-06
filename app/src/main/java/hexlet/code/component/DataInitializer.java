@@ -1,8 +1,10 @@
 package hexlet.code.component;
 
+import hexlet.code.model.Label;
 import hexlet.code.model.Role;
 import hexlet.code.model.TaskStatus;
 import hexlet.code.model.User;
+import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
 import java.util.List;
@@ -18,23 +20,27 @@ public class DataInitializer implements ApplicationRunner {
 
     private final UserRepository userRepository;
     private final TaskStatusRepository taskStatusRepository;
+    private final LabelRepository labelRepository;
     private final PasswordEncoder passwordEncoder;
 
     public DataInitializer(
             UserRepository repositoryOfUsers,
             PasswordEncoder encoder,
-            TaskStatusRepository repositoryOfStatuses) {
+            TaskStatusRepository repositoryOfStatuses,
+            LabelRepository repositoryOfLabels) {
         userRepository = repositoryOfUsers;
         passwordEncoder = encoder;
         taskStatusRepository = repositoryOfStatuses;
+        labelRepository = repositoryOfLabels;
     }
 
     @Override
     public void run(ApplicationArguments args) {
-        log.info("🚀 Старт автоматической генерации данных для DEV...");
+        log.info("🚀 Start of the generation of pre-set data...");
         createAdmin();
         createAvailableTaskStatuses();
-        log.info("✅ База данных успешно наполнена!");
+        createAvailableLabels();
+        log.info("✅ The data generation finished.");
     }
 
     private void createAdmin() {
@@ -75,9 +81,29 @@ public class DataInitializer implements ApplicationRunner {
                                 })
                         .toList();
 
-        for (var s : taskStatuses) {
-            if (taskStatusRepository.findBySlug(s.getSlug()).isEmpty()) {
-                taskStatusRepository.save(s);
+        for (var status : taskStatuses) {
+            if (taskStatusRepository.findBySlug(status.getSlug()).isEmpty()) {
+                taskStatusRepository.save(status);
+            }
+        }
+    }
+
+    private void createAvailableLabels() {
+        var labelNames = List.of("feature", "bugs");
+
+        var labels =
+                labelNames.stream()
+                        .map(
+                                name -> {
+                                    var label = new Label();
+                                    label.setName(name);
+                                    return label;
+                                })
+                        .toList();
+
+        for (var label : labels) {
+            if (labelRepository.findByName(label.getName()).isEmpty()) {
+                labelRepository.save(label);
             }
         }
     }
