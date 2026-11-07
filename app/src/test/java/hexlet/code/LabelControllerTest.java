@@ -71,7 +71,7 @@ public class LabelControllerTest {
     }
 
     @Test
-    // Returns 200 and List<User>
+    // Returns 200 OK and a list of 3 labels (List<Label>)
     void indexTest() throws Exception {
         String token = jwtUtils.generateToken(actor.getEmail(), actor.getAuthorities());
 
@@ -82,7 +82,7 @@ public class LabelControllerTest {
     }
 
     @Test
-    // Returns 200 and User
+    // Returns 200 OK and Label
     void showTest() throws Exception {
         var testLabel = labels.getFirst();
 
@@ -109,7 +109,7 @@ public class LabelControllerTest {
     }
 
     @Test
-    // Returns status 201 and Body
+    // Returns status 201 and the created Label
     void createTest() throws Exception {
         var dto = new LabelCreateDTO();
 
@@ -137,7 +137,7 @@ public class LabelControllerTest {
     }
 
     @Test
-    // Returns status 200 and the updated User
+    // Returns 200 OK and the updated Label
     void partialUpdateTest() throws Exception {
         var testLabel = labels.getFirst();
 

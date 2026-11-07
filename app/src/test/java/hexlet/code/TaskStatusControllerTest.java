@@ -69,7 +69,7 @@ public class TaskStatusControllerTest {
     }
 
     @Test
-    // Returns 200 and List<User>
+    // Returns 200 OK and a list of 3 task statuses (List<TaskStatus>)
     void indexTest() throws Exception {
         String token = jwtUtils.generateToken(actor.getEmail(), actor.getAuthorities());
 
@@ -80,7 +80,7 @@ public class TaskStatusControllerTest {
     }
 
     @Test
-    // Returns 200 and User
+    // Returns 200 OK and TaskStatus
     void showTest() throws Exception {
         var testStatus = taskStatuses.getFirst();
 
@@ -109,7 +109,7 @@ public class TaskStatusControllerTest {
     }
 
     @Test
-    // Returns status 201 and Body
+    // Returns status 201 and the created TaskStatus
     void createTest() throws Exception {
         String token = jwtUtils.generateToken(actor.getEmail(), actor.getAuthorities());
 
@@ -140,7 +140,7 @@ public class TaskStatusControllerTest {
     }
 
     @Test
-    // Returns status 200 and the updated User
+    // Returns status 200 and the updated TaskStatus
     void partialUpdateTest() throws Exception {
         var testStatus = taskStatuses.getFirst();
 

@@ -76,7 +76,102 @@ public class TaskControllerTest {
     }
 
     @Test
-    // Returns 200 and List<User>
+    // Returns 200 OK and a list of 3 tasks (List<Task>)
+    void indexWithTitleContainsFilter() throws Exception {
+        String token = jwtUtils.generateToken(actor.getEmail(), actor.getAuthorities());
+
+        mockMvc.perform(
+                        get("/api/tasks")
+                                .header("Authorization", "Bearer " + token)
+                                .param("titleCont", "Task"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(TEST_TASK_COUNT));
+    }
+
+    @Test
+    // Returns 200 OK and a list of 1 tasks (List<Task>)
+    void indexWithAssigneeIdFilter() throws Exception {
+        String token = jwtUtils.generateToken(actor.getEmail(), actor.getAuthorities());
+
+        var testTask = tasks.getFirst();
+
+        var content =
+                mockMvc.perform(
+                                get("/api/tasks")
+                                        .header("Authorization", "Bearer " + token)
+                                        .param(
+                                                "assigneeId",
+                                                testTask.getAssignee().getId().toString()))
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$").isArray())
+                        .andExpect(jsonPath("$.length()").value(1))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+
+        var context = JsonPath.parse(content);
+
+        Long responseAssigneeId = context.read("$[0].assignee_id", Long.class);
+
+        assertThat(responseAssigneeId).isEqualTo(testTask.getAssignee().getId());
+    }
+
+    @Test
+    // Returns 200 OK and a list of 1 tasks (List<Task>)
+    void indexWithStatus() throws Exception {
+        String token = jwtUtils.generateToken(actor.getEmail(), actor.getAuthorities());
+
+        var testTask = tasks.getLast();
+
+        var content =
+                mockMvc.perform(
+                                get("/api/tasks")
+                                        .header("Authorization", "Bearer " + token)
+                                        .param("status", testTask.getTaskStatus().getSlug()))
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$").isArray())
+                        .andExpect(jsonPath("$.length()").value(1))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+
+        var context = JsonPath.parse(content);
+
+        String responseStatus = context.read("$[0].status");
+
+        assertThat(responseStatus).isEqualTo(testTask.getTaskStatus().getSlug());
+    }
+
+    @Test
+    // Returns 200 OK and a list of 1 tasks (List<Task>)
+    void indexWithLabelId() throws Exception {
+        String token = jwtUtils.generateToken(actor.getEmail(), actor.getAuthorities());
+
+        var testTask = tasks.getLast();
+        var testLabel = testTask.getLabels().stream().toList().getFirst();
+
+        var content =
+                mockMvc.perform(
+                                get("/api/tasks")
+                                        .header("Authorization", "Bearer " + token)
+                                        .param("labelId", testLabel.getId().toString()))
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$").isArray())
+                        .andExpect(jsonPath("$.length()").value(1))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+
+        var context = JsonPath.parse(content);
+
+        List<Integer> responseLabelIds = context.read("$[0].labelIds");
+
+        assertThat(responseLabelIds).contains(testLabel.getId().intValue());
+    }
+
+    @Test
+    // Returns 200 OK and a list of 3 tasks (List<Task>)
     void indexTest() throws Exception {
         String token = jwtUtils.generateToken(actor.getEmail(), actor.getAuthorities());
 
@@ -87,7 +182,7 @@ public class TaskControllerTest {
     }
 
     @Test
-    // Returns 200 and User
+    // Returns 200 and Task
     void showTest() throws Exception {
         var testTask = tasks.getFirst();
 
@@ -121,7 +216,7 @@ public class TaskControllerTest {
     }
 
     @Test
-    // Returns status 201 and Body
+    // Returns status 201 and the created Task
     void createTest() throws Exception {
         var dto = new TaskCreateDTO();
 
@@ -168,7 +263,7 @@ public class TaskControllerTest {
     }
 
     @Test
-    // Returns status 200 and the updated User
+    // Returns status 200 and the updated Task
     void partialUpdateTest() throws Exception {
         var testTask = tasks.getFirst();
 

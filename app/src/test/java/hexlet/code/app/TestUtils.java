@@ -51,9 +51,9 @@ public class TestUtils {
 
         for (int i = 0; i < userCount; i += 1) {
             var user = new User();
-            user.setFirstName("TestName" + i);
-            user.setLastName("TestSurname" + i);
-            user.setEmail("test" + i + "@mail.com");
+            user.setFirstName("User" + i);
+            user.setLastName("Lastname" + i);
+            user.setEmail("user" + i + "@mail.com");
             user.setPassword(passwordEncoder.encode("" + i + i + i));
             rawUsers.add(user);
         }
@@ -66,8 +66,8 @@ public class TestUtils {
 
         for (int i = 0; i < statusCount; i += 1) {
             var status = new TaskStatus();
-            status.setName("StatusName" + i);
-            status.setSlug("status_slug" + i);
+            status.setName("Status" + i);
+            status.setSlug("status_" + i + "_slug");
             rawStatuses.add(status);
         }
 

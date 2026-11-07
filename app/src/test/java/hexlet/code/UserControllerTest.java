@@ -67,7 +67,7 @@ public class UserControllerTest {
     }
 
     @Test
-    // Returns 200 and List<User>
+    // Returns 200 OK and a list of 3 users (List<User>)
     void indexTest() throws Exception {
         var actor = users.getFirst();
 
@@ -109,7 +109,7 @@ public class UserControllerTest {
     }
 
     @Test
-    // Returns status 201 and Body
+    // Returns status 201 and the created User
     void createTest() throws Exception {
         var actor = users.getFirst();
 
@@ -192,7 +192,6 @@ public class UserControllerTest {
     }
 
     @Test
-
     // Returns status 204
     void deleteTest() throws Exception {
         var actor = users.getFirst();

@@ -20,7 +20,7 @@ public class TaskSpecification {
         return (root, query, cb) ->
                 (name == null || name.isBlank())
                         ? cb.conjunction()
-                        : cb.like(cb.lower(root.get("title")), "%" + name.toLowerCase() + "%");
+                        : cb.like(cb.lower(root.get("name")), "%" + name.toLowerCase() + "%");
     }
 
     private Specification<Task> withAssigneeId(Long assigneeId) {
