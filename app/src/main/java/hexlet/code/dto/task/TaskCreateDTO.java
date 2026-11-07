@@ -1,7 +1,6 @@
 package hexlet.code.dto.task;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import hexlet.code.dto.label.LabelCreateDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -26,5 +25,6 @@ public class TaskCreateDTO {
     @JsonProperty("assignee_id")
     private Long assigneeId;
 
-    @Valid private Set<LabelCreateDTO> labels;
+    @JsonProperty("taskLabelIds")
+    @Valid private Set<Long> labelIds;
 }

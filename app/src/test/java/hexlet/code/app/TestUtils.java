@@ -10,6 +10,8 @@ import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -121,5 +123,9 @@ public class TestUtils {
         }
 
         return labelRepository.saveAll(rawLabels);
+    }
+
+    public Set<Long> getStoredLabelsIds() {
+        return labelRepository.findAll().stream().map(Label::getId).collect(Collectors.toSet());
     }
 }

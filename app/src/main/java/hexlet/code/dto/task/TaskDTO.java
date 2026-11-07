@@ -24,6 +24,7 @@ public class TaskDTO {
 
     private String status;
 
+    @JsonProperty("taskLabelIds")
     Set<Long> labelIds;
 
     private LocalDateTime createdAt;
