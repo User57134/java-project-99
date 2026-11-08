@@ -6,7 +6,7 @@ h2database-lib = "2.5.252"
 postgresql-lib = "42.7.14"
 jackson-databind-nullable-lib = "0.2.11"
 mapstruct-lib = "1.6.3"
-sentry-starter-lib = "8.0.0"
+sentry-starter-lib = "8.63.0"
 
 [plugins]
 spring-boot = {id = "org.springframework.boot", version.ref = "spring-boot-plugin"}
@@ -24,7 +24,7 @@ spring-boot-starter-oauth2-resource-server = { module = "org.springframework.boo
 spring-boot-starter-webmvc = { module = "org.springframework.boot:spring-boot-starter-webmvc" }
 spring-boot-starter-webmvc-test = { module = "org.springframework.boot:spring-boot-starter-webmvc-test" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
-sentry-spring-boot-starter = { module = "io.sentry:sentry-spring-boot-starter-jakarta", version.ref = "sentry-starter-lib" }
+sentry-spring-boot-starter = { module = "io.sentry:sentry-spring-boot-4", version.ref = "sentry-starter-lib" }
 h2database = { module = "com.h2database:h2", version.ref = "h2database-lib" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql-lib" }
 jackson-databind-nullable = { module = "org.openapitools:jackson-databind-nullable", version.ref = "jackson-databind-nullable-lib" }
