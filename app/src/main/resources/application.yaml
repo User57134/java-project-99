@@ -31,3 +31,6 @@ server:
 rsa:
   private-key: ${PRIVATE_KEY:classpath:certs/private.pem}      # Закрытый ключ
   public-key: ${PUBLIC_KEY:classpath:certs/public.pem}         # Открытый ключ
+
+sentry:
+  dsn: ${SENTRY_DSN:}

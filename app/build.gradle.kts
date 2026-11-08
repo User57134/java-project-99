@@ -91,6 +91,9 @@ dependencies {
 
 	// Процессор аннотаций MapStruct для генерации кода при тестировании
 	testAnnotationProcessor(libs.mapstruct.processor)
+
+	// Интеграция с Bugsink: автоперехват ошибок Spring Boot
+	implementation(libs.sentry.spring.boot.starter)
 }
 
 tasks.withType<Test> {
