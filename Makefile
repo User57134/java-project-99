@@ -1,18 +1,20 @@
+GRADLE = ./app/gradlew --project-dir app --current-dir app
+
 .PHONY: clean build setup run test lint
 
 clean:
-	./app/gradlew clean
+	$(GRADLE) clean
 
 build:
-	./app/gradlew build
+	$(GRADLE) build
 
 setup: clean build
 
 run: setup
-	./app/gradlew bootRun --args='--spring.profiles.active=dev'
+	$(GRADLE) bootRun --args='--spring.profiles.active=dev'
 
 test:
-	./app/gradlew test
+	$(GRADLE) test
 
 lint:
-	./app/gradlew spotlessCheck
+	$(GRADLE) spotlessCheck
