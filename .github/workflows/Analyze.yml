@@ -14,6 +14,12 @@ jobs:
           java-version: 21
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
+      - name: Generate Keys for Test
+        run: |
+          mkdir -p app/src/test/resources/certs
+          mkdir -p app/src/main/resources/certs
+          openssl genrsa -out app/src/test/resources/certs/private.pem 2048
+          openssl rsa -in app/src/test/resources/certs/private.pem -pubout -out app/src/test/resources/certs/public.pem
       - name: Run tests
         run: make test
       - name: Run linter
