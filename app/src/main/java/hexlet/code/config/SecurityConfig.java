@@ -66,7 +66,8 @@ public class SecurityConfig {
                                                 "/static/**",
                                                 "/api/login",
                                                 "/welcome",
-                                                "/sentrytest")
+                                                "/sentrytest",
+                                                "/error")
                                         .permitAll()
                                         .anyRequest()
                                         .authenticated())
