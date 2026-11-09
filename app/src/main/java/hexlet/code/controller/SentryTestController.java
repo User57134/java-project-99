@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SentryTestController {
 
     @GetMapping("/sentrytest")
-    public void test() throws Exception {
+    public String test() throws Exception {
         throw new Exception("Тестовая автоматическая ошибка для проверки Bugsink!");
     }
 }
