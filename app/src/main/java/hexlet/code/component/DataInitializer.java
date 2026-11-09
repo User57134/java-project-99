@@ -58,18 +58,18 @@ public class DataInitializer implements ApplicationRunner {
     }
 
     private void createAvailableTaskStatuses() {
-        var statusNames = List.of("draft", "To Review", "To Be Fixed", "To Publish", "Published");
+        var statusNames = List.of("draft", "ToReview", "ToBeFixed", "ToPublish", "Published");
 
         var taskStatuses =
                 statusNames.stream()
                         .map(
                                 name -> {
-                                    var words = name.toLowerCase().split(" ");
+                                    var words = name.split("(?<=[a-zа-яё])(?=[A-ZА-ЯЁ])");
 
-                                    StringBuilder slug = new StringBuilder(words[0]);
+                                    StringBuilder slug = new StringBuilder(words[0].toLowerCase());
                                     if (words.length > 1) {
                                         for (int i = 1; i < words.length; i += 1) {
-                                            slug.append("_").append(words[i]);
+                                            slug.append("_").append(words[i].toLowerCase());
                                         }
                                     }
 
@@ -80,6 +80,8 @@ public class DataInitializer implements ApplicationRunner {
                                     return status;
                                 })
                         .toList();
+
+        log.info("taskStatuses = " + taskStatuses);
 
         for (var status : taskStatuses) {
             if (taskStatusRepository.findBySlug(status.getSlug()).isEmpty()) {
