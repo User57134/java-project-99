@@ -1,3 +1,6 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 plugins {
 
 	// Подключает базовые инструменты компиляции, тестирования и сборки Java в JAR
@@ -96,15 +99,70 @@ dependencies {
 	implementation(libs.sentry.spring.boot.starter)
 }
 
-tasks.withType<Test> {
+
+tasks.test {
+
+	// enabled = false
+
 	useJUnitPlatform()
-	finalizedBy(tasks.jacocoTestReport)
+
+	testLogging {
+		showStandardStreams = true
+
+		// какие события показывать
+		events(
+			TestLogEvent.FAILED,
+			TestLogEvent.PASSED,
+			TestLogEvent.SKIPPED,
+			TestLogEvent.STANDARD_OUT,
+			TestLogEvent.STANDARD_ERROR,
+		)
+
+		// формат исключений
+		exceptionFormat = TestExceptionFormat.FULL
+
+		// детали
+		showExceptions = true
+		showCauses = true
+		showStackTraces = true
+	}
 }
 
+
+// Отчёт о покрытии считается сразу после тестов, отдельный вызов не нужен.
 tasks.jacocoTestReport {
 	dependsOn(tasks.test)
+
 	reports {
 		xml.required.set(true)
 		html.required.set(true)
 	}
 }
+
+
+tasks.withType<Test> {
+	useJUnitPlatform()
+	finalizedBy(tasks.jacocoTestReport)
+}
+
+
+// Порог покрытия: ниже него `./gradlew build` падает,
+// и сборка в CI краснеет вместе с ним.
+tasks.jacocoTestCoverageVerification {
+	dependsOn(tasks.jacocoTestReport)
+	violationRules {
+		rule {
+			limit {
+				counter = "INSTRUCTION"
+				value = "COVEREDRATIO"
+				minimum = "0.80".toBigDecimal()
+			}
+		}
+	}
+}
+
+
+tasks.check { dependsOn(tasks.jacocoTestCoverageVerification) }
+
+
+
