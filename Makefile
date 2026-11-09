@@ -20,6 +20,9 @@ setup: keys clean build
 run: setup
 	$(GRADLE) bootRun --args='--spring.profiles.active=dev'
 
+start:
+	$(GRADLE) bootRun --args='--spring.profiles.active=dev'
+
 test:
 	$(GRADLE) test
 
