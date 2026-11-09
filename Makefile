@@ -1,4 +1,4 @@
-GRADLE = ./app/gradlew --project-dir app --current-dir app
+GRADLE = cd app && ./gradlew
 
 .PHONY: clean build setup run test lint
 
