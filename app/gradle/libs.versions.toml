@@ -1,5 +1,6 @@
 [versions]
 spring-boot-plugin = "4.1.2"
+springdoc-openapi-starter-lib = "3.2.0"
 lombok-plugin = "9.5.0"
 spotless-plugin = "8.10.1"
 h2database-lib = "2.5.252"
@@ -25,6 +26,7 @@ spring-boot-starter-webmvc = { module = "org.springframework.boot:spring-boot-st
 spring-boot-starter-webmvc-test = { module = "org.springframework.boot:spring-boot-starter-webmvc-test" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 sentry-spring-boot-starter = { module = "io.sentry:sentry-spring-boot-4", version.ref = "sentry-starter-lib" }
+springdoc-openapi-starter = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc-openapi-starter-lib" }
 h2database = { module = "com.h2database:h2", version.ref = "h2database-lib" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql-lib" }
 jackson-databind-nullable = { module = "org.openapitools:jackson-databind-nullable", version.ref = "jackson-databind-nullable-lib" }

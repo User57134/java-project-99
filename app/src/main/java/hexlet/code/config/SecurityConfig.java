@@ -69,6 +69,12 @@ public class SecurityConfig {
                                                 "/sentrytest",
                                                 "/error")
                                         .permitAll()
+                                        .requestMatchers(
+                                                "/v3/api-docs/**",
+                                                "/api-docs/**",
+                                                "/swagger-ui/**",
+                                                "/swagger-ui.html")
+                                        .permitAll()
                                         .anyRequest()
                                         .authenticated())
 

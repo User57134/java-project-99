@@ -70,6 +70,9 @@ dependencies {
 	// Подключение компонентов для работы с web, библиотеку для работы с JSON
 	implementation(libs.spring.boot.starter.webmvc)
 
+	// Генерация интерактивной документации API и интерфейса Swagger UI
+	implementation(libs.springdoc.openapi.starter)
+
 	// Подключение компонентов для обычных тестов и тестов web слоя
 	testImplementation(libs.spring.boot.starter.webmvc.test)
 
