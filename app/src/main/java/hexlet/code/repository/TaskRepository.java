@@ -1,6 +1,7 @@
 package hexlet.code.repository;
 
 import hexlet.code.model.Task;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -14,4 +15,7 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
     @Override
     @EntityGraph(attributePaths = {"taskStatus", "assignee", "labels"})
     Page<Task> findAll(Specification<Task> spec, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"labels"})
+    Optional<Task> findTaskWithLabelsById(Long id);
 }

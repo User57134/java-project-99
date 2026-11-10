@@ -30,7 +30,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
 @Slf4j
@@ -212,7 +211,6 @@ public class TaskControllerTest {
         assertThat(actualDate).isEqualTo(expectedDate);
     }
 
-    @Transactional
     @Test
     // Returns status 201 and the created Task
     void createTest() throws Exception {
@@ -249,7 +247,7 @@ public class TaskControllerTest {
         var content = result.getResponse().getContentAsString();
 
         Long generatedId = JsonPath.parse(content).read("$.id", Long.class);
-        var savedTask = taskRepository.findById(generatedId);
+        var savedTask = taskRepository.findTaskWithLabelsById(generatedId);
         assertThat(savedTask).isPresent();
 
         var savedLabelsIds = savedTask.get().getLabels().stream().map(Label::getId);
