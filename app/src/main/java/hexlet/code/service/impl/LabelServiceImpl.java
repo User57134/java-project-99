@@ -1,0 +1,75 @@
+package hexlet.code.service.impl;
+
+import hexlet.code.dto.label.LabelCreateDTO;
+import hexlet.code.dto.label.LabelDTO;
+import hexlet.code.dto.label.LabelUpdateDTO;
+import hexlet.code.exception.ResourceNotFoundException;
+import hexlet.code.mapper.LabelMapper;
+import hexlet.code.repository.LabelRepository;
+import hexlet.code.service.LabelService;
+import jakarta.transaction.Transactional;
+import java.util.List;
+import org.springframework.stereotype.Service;
+
+@Service
+public class LabelServiceImpl implements LabelService {
+
+    private final LabelRepository labelRepository;
+    private final LabelMapper labelMapper;
+
+    public LabelServiceImpl(LabelRepository repository, LabelMapper mapper) {
+        labelRepository = repository;
+        labelMapper = mapper;
+    }
+
+    @Override
+    public List<LabelDTO> findAll(int page, int size) {
+        return labelRepository.findAll().stream()
+                .map(labelMapper::makeDTO)
+                .skip((long) (page - 1) * size)
+                .limit(size)
+                .toList();
+    }
+
+    @Override
+    public LabelDTO find(Long id) {
+        var label =
+                labelRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Label with ID " + id + " not found"));
+
+        return labelMapper.makeDTO(label);
+    }
+
+    @Transactional
+    @Override
+    public LabelDTO create(LabelCreateDTO dto) {
+        var label = labelRepository.save(labelMapper.makeEntity(dto));
+
+        return labelMapper.makeDTO(label);
+    }
+
+    @Transactional
+    @Override
+    public LabelDTO update(Long id, LabelUpdateDTO dto) {
+        var label =
+                labelRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Label with ID " + id + " not found"));
+
+        labelMapper.updateEntity(label, dto);
+
+        return labelMapper.makeDTO(labelRepository.save(label));
+    }
+
+    @Override
+    public void delete(Long id) {
+        labelRepository.deleteById(id);
+    }
+}

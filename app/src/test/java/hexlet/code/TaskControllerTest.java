@@ -36,7 +36,6 @@ import tools.jackson.databind.ObjectMapper;
 @Slf4j
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
 public class TaskControllerTest {
 
     private final int TEST_TASK_COUNT = 3;
@@ -213,6 +212,7 @@ public class TaskControllerTest {
         assertThat(actualDate).isEqualTo(expectedDate);
     }
 
+    @Transactional
     @Test
     // Returns status 201 and the created Task
     void createTest() throws Exception {
