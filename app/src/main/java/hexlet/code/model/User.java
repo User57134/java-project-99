@@ -16,10 +16,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -96,25 +98,39 @@ public class User implements BaseEntity, UserDetails {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
+    public final boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
 
-        if (obj instanceof User other) {
-            Long otherId = other.getId();
-
-            if (this.id != null && otherId != null) {
-                return this.id.equals(otherId);
-            }
+        if (o == null) {
+            return false;
         }
 
-        return false;
+        Class<?> oEffectiveClass =
+                o instanceof HibernateProxy
+                        ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass()
+                        : o.getClass();
+        Class<?> thisEffectiveClass =
+                this instanceof HibernateProxy
+                        ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass()
+                        : this.getClass();
+
+        if (thisEffectiveClass != oEffectiveClass) {
+            return false;
+        }
+
+        User user = (User) o;
+        return getId() != null && Objects.equals(getId(), user.getId());
     }
 
     @Override
-    public int hashCode() {
-        // Константный hashCode гарантирует, что при обновлении объект не исчезнет из коллекции
-        return getClass().hashCode();
+    public final int hashCode() {
+        return this instanceof HibernateProxy
+                ? ((HibernateProxy) this)
+                        .getHibernateLazyInitializer()
+                        .getPersistentClass()
+                        .hashCode()
+                : getClass().hashCode();
     }
 }

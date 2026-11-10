@@ -1,4 +1,4 @@
-package hexlet.code.app;
+package hexlet.code.util;
 
 import hexlet.code.model.Label;
 import hexlet.code.model.Task;
@@ -61,6 +61,13 @@ public class TestUtils {
         }
 
         return userRepository.saveAll(rawUsers);
+    }
+
+    public void createTestUser(String username, String password) {
+        User user = new User();
+        user.setEmail(username);
+        user.setPassword(passwordEncoder.encode(password));
+        userRepository.save(user);
     }
 
     public List<TaskStatus> createStatuses(int statusCount) {
