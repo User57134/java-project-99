@@ -1,9 +1,7 @@
 package hexlet.code.dto.task;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +12,7 @@ import org.openapitools.jackson.nullable.JsonNullable;
 @Getter
 @Setter
 public class TaskUpdateDTO {
-    @NotBlank @Size(min = 1, message = "Название задачи должно содержать как минимум 1 символ") private JsonNullable<String> title;
+    @NotBlank(message = "Название задачи должно содержать как минимум 1 символ") private JsonNullable<String> title;
 
     private JsonNullable<String> content;
 
@@ -26,5 +24,5 @@ public class TaskUpdateDTO {
     private JsonNullable<Long> assigneeId;
 
     @JsonProperty("taskLabelIds")
-    @Valid private JsonNullable<Set<Long>> labelIds;
+    private JsonNullable<Set<Long>> labelIds;
 }
